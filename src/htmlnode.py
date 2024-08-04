@@ -63,3 +63,47 @@ class LeafNode(HTMLNode):
     def __repr__(self) -> str:
         """String representantion of a LeafNode instance."""
         return f"LeafNode({self.tag}, value: {self.value}, {self.props})"
+
+
+class ParentNode(HTMLNode):
+    """Parent node."""
+
+    def __init__(
+        self,
+        children: list[HTMLNode],
+        tag: tp.Optional[str] = None,
+        props: tp.Optional[dict] = None,
+    ) -> None:
+        """Inits ParentNode."""
+        super().__init__(tag, None, children, props)
+
+    def to_html(self) -> str:
+        """Overwrite `to_html` method.
+
+        Raises:
+            ValueError if parent node has no tag.
+            ValueError if parent node has no child.
+
+        Returns:
+            A string.
+        """
+        if not self.tag:
+            raise ValueError("Parent node must have a tag.")
+        if not self.children:
+            raise ValueError("Parent node must have at least one child node.")
+
+        if self.props_to_html():
+            html_string = f"<{self.tag} {self.props_to_html()}>"
+        else:
+            html_string = f"<{self.tag}>"
+
+        for child in self.children:
+            html_string += child.to_html()
+
+        html_string += f"</{self.tag}>"
+
+        return html_string
+
+    def __repr__(self) -> str:
+        """String representantion of a ParentNode instance."""
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
