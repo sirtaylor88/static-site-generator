@@ -52,7 +52,7 @@ class LeafNode(HTMLNode):
         Returns:
             A string.
         """
-        if not self.value:
+        if self.value is None:
             raise ValueError("Leaf node must have a value.")
         if self.tag is None:
             return self.value

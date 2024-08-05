@@ -60,6 +60,7 @@ def test_init_leaf_node():
     "n, expected",
     [
         (["I am a Leaf Node"], "I am a Leaf Node"),
+        (["", "p"], "<p></p>"),
         (["I am a Leaf Node", "p"], "<p>I am a Leaf Node</p>"),
         (
             ["I am a Leaf Node", "p", {"class": "text-center"}],
@@ -73,7 +74,7 @@ def test_leaf_node_to_html(n, expected):
     assert lnode.to_html() == expected
 
     with pytest.raises(ValueError) as excinfo:
-        LeafNode("").to_html()
+        LeafNode(None).to_html()
     assert "Leaf node must have a value." in str(excinfo)
 
 
