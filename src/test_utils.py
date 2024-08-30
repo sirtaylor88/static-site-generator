@@ -9,6 +9,7 @@ from utils import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -108,4 +109,25 @@ def test_split_nodes_link():
         TextNode(" and ", TextNode.TEXT),
         TextNode("to youtube", TextNode.LINK, "https://www.youtube.com/@bootdotdev"),
         TextNode(".", TextNode.TEXT),
+    ]
+
+
+def test_text_to_textnodes():
+    """Test that `text_to_textnodes` method works correctly."""
+    text = (
+        "This is **text** with an *italic* word and a `code block` "
+        "and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) "
+        "and a [link](https://boot.dev)"
+    )
+    assert text_to_textnodes(text) == [
+        TextNode("This is ", TextNode.TEXT),
+        TextNode("text", TextNode.BOLD),
+        TextNode(" with an ", TextNode.TEXT),
+        TextNode("italic", TextNode.ITALIC),
+        TextNode(" word and a ", TextNode.TEXT),
+        TextNode("code block", TextNode.CODE),
+        TextNode(" and an ", TextNode.TEXT),
+        TextNode("obi wan image", TextNode.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        TextNode(" and a ", TextNode.TEXT),
+        TextNode("link", TextNode.LINK, "https://boot.dev"),
     ]

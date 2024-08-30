@@ -140,3 +140,20 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             result.extend(split_nodes_link([TextNode(substrings[1], TextNode.TEXT)]))
 
     return result
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    """Convert text to a list of TextNode.
+
+    Args:
+        text: A string.
+
+    Returns:
+        A list of TextNode instances.
+    """
+    node_list = split_nodes_image([TextNode(text, TextNode.TEXT)])
+    node_list = split_nodes_link(node_list)
+    node_list = split_nodes_delimiter(node_list, "**", TextNode.BOLD)
+    node_list = split_nodes_delimiter(node_list, "*", TextNode.ITALIC)
+    node_list = split_nodes_delimiter(node_list, "`", TextNode.CODE)
+    return node_list
