@@ -1,5 +1,7 @@
 """Useful methods."""
 
+import re
+
 from textnode import TextNode
 
 
@@ -30,3 +32,31 @@ def split_nodes_delimiter(
             result.append(TextNode(text, TextNode.TEXT if i % 2 == 0 else text_type))
 
     return result
+
+
+def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+    """Extract images from markdown text.
+
+    Args:
+        text: A string.
+
+    Returns:
+        A list of tuple of `src` and `alt` attributes for each image.
+    """
+    pattern = r"!\[(.*?)\]\((.*?)\)"
+    re.findall(pattern, text)
+    return re.findall(pattern, text)
+
+
+def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+    """Extract images from markdown link.
+
+    Args:
+        text: A string.
+
+    Returns:
+        A list of tuple of anchor text and URL for each link.
+    """
+    pattern = r"(?<!!)\[(.*?)\]\((.*?)\)"
+    re.findall(pattern, text)
+    return re.findall(pattern, text)
