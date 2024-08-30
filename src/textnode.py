@@ -8,6 +8,13 @@ from htmlnode import LeafNode
 class TextNode:
     """Text node."""
 
+    TEXT = "text"
+    BOLD = "bold"
+    ITALIC = "italic"
+    CODE = "code"
+    LINK = "link"
+    IMAGE = "image"
+
     def __init__(self, text: str, text_type: str, url: tp.Optional[str] = None) -> None:
         """Inits TextNode."""
         self.text = text
@@ -41,17 +48,17 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     """
 
     match text_node.text_type:
-        case "text":
+        case TextNode.TEXT:
             return LeafNode(text_node.text)
-        case "bold":
+        case TextNode.BOLD:
             return LeafNode(text_node.text, tag="b")
-        case "italic":
+        case TextNode.ITALIC:
             return LeafNode(text_node.text, tag="i")
-        case "code":
+        case TextNode.CODE:
             return LeafNode(text_node.text, tag="code")
-        case "link":
+        case TextNode.LINK:
             return LeafNode(text_node.text, tag="a", props={"href": text_node.url})
-        case "image":
+        case TextNode.IMAGE:
             return LeafNode(
                 "", tag="img", props={"src": text_node.url, "alt": text_node.text}
             )
