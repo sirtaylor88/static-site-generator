@@ -48,7 +48,9 @@ def test_repr(n, expected):
 def test_init_leaf_node():
     """Test __init__ method for LeafNode"""
     with pytest.raises(TypeError) as excinfo:
+        # pylint: disable=no-value-for-parameter
         LeafNode()
+        # pylint: enable=no-value-for-parameter
     assert "missing 1 required positional argument: 'value'" in str(excinfo)
 
     lnode = LeafNode("I am a Leaf Node")
@@ -81,7 +83,9 @@ def test_leaf_node_to_html(n, expected):
 def test_init_parent_node():
     """Test __init__ method for ParentNode"""
     with pytest.raises(TypeError) as excinfo:
+        # pylint: disable=no-value-for-parameter
         ParentNode()
+        # pylint: enable=no-value-for-parameter
     assert "missing 1 required positional argument: 'children'" in str(excinfo)
 
     lnode = LeafNode("Hello world")

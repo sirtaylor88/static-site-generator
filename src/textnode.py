@@ -2,6 +2,8 @@
 
 import typing as tp
 
+from htmlnode import LeafNode
+
 
 class TextNode:
     """Text node."""
@@ -23,3 +25,35 @@ class TextNode:
     def __repr__(self) -> str:
         """String representantion of a TextNode instance."""
         return f"TextNode({self.text}, {self.text_type}, {self.url})"
+
+
+def text_node_to_html_node(text_node: TextNode) -> LeafNode:
+    """Convert TextNode to HTML Node.
+
+    Args:
+        text_node: A TextNode instance.
+
+    Raises:
+        TypeError if text type is not valid
+
+    Returns:
+        A HTMLNode instance.
+    """
+
+    match text_node.text_type:
+        case "text":
+            return LeafNode(text_node.text)
+        case "bold":
+            return LeafNode(text_node.text, tag="b")
+        case "italic":
+            return LeafNode(text_node.text, tag="i")
+        case "code":
+            return LeafNode(text_node.text, tag="code")
+        case "link":
+            return LeafNode(text_node.text, tag="a", props={"href": text_node.url})
+        case "image":
+            return LeafNode(
+                "", tag="img", props={"src": text_node.url, "alt": text_node.text}
+            )
+        case _:
+            raise TypeError("Text type is not valid.")

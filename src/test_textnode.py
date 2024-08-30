@@ -2,7 +2,7 @@
 
 import pytest
 
-from textnode import TextNode
+from textnode import TextNode, text_node_to_html_node
 
 
 @pytest.mark.parametrize(
@@ -57,3 +57,40 @@ def test_repr(n, expected):
     """Test `__repr__` method."""
     node = TextNode(*n)
     assert str(node) == expected
+
+
+@pytest.mark.parametrize(
+    "text, node_type, url, expected",
+    [
+        ("", "text", None, ""),
+        ("Renault", "bold", None, "<b>Renault</b>"),
+        ("Alain", "italic", None, "<i>Alain</i>"),
+        ("python3 -V", "code", None, "<code>python3 -V</code>"),
+        (
+            "Search",
+            "link",
+            "https://google.fr",
+            '<a href="https://google.fr">Search</a>',
+        ),
+        (
+            "Mona Lisa",
+            "image",
+            (
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/"
+                "Mona_Lisa.jpg/594px-Mona_Lisa.jpg"
+            ),
+            (
+                '<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/'
+                '6/6a/Mona_Lisa.jpg/594px-Mona_Lisa.jpg" alt="Mona Lisa"></img>'
+            ),
+        ),
+    ],
+)
+def test_convert_to_html_node(text, node_type, url, expected):
+    """Test `text_node_to_html_node` method."""
+    node = TextNode(text=text, text_type=node_type, url=url)
+    assert text_node_to_html_node(node).to_html() == expected
+
+    with pytest.raises(TypeError) as excinfo:
+        text_node_to_html_node(TextNode("", "abc"))
+    assert "Text type is not valid." in str(excinfo)
