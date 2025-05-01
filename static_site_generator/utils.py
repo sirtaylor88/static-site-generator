@@ -3,6 +3,7 @@
 import re
 
 from static_site_generator.business.textnode import TextNode
+from static_site_generator.constants import TextType
 
 
 def split_nodes_delimiter(
@@ -23,11 +24,16 @@ def split_nodes_delimiter(
         ValueError: if there is a missing closing delimiter.
     """
     result = []
-    if text_type not in [TextNode.TEXT, TextNode.BOLD, TextNode.CODE, TextNode.ITALIC]:
+    if text_type not in [
+        TextType.TEXT.value,
+        TextType.BOLD.value,
+        TextType.CODE.value,
+        TextType.ITALIC.value,
+    ]:
         raise TypeError("Invalid text type.")
 
     for node in old_nodes:
-        if node.text_type != TextNode.TEXT:
+        if node.text_type != TextType.TEXT.value:
             result.append(node)
             continue
         if delimiter in node.text_content and node.text_content.count(delimiter) == 1:
@@ -38,12 +44,12 @@ def split_nodes_delimiter(
             result.append(node)
             continue
         if substrings[0]:
-            result.append(TextNode(substrings[0], TextNode.TEXT))
+            result.append(TextNode(substrings[0], TextType.TEXT.value))
         result.append(TextNode(substrings[1], text_type))
         if substrings[2]:
             result.extend(
                 split_nodes_delimiter(
-                    [TextNode(substrings[2], TextNode.TEXT)], delimiter, text_type
+                    [TextNode(substrings[2], TextType.TEXT.value)], delimiter, text_type
                 )
             )
 
@@ -89,7 +95,7 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     """
     result = []
     for node in old_nodes:
-        if node.text_type != TextNode.TEXT:
+        if node.text_type != TextType.TEXT.value:
             result.append(node)
             continue
 
@@ -102,10 +108,12 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
         alt, src = image_data_list[0]
         substrings = node.text_content.split(f"![{alt}]({src})", 1)
         if substrings[0]:
-            result.append(TextNode(substrings[0], TextNode.TEXT))
-        result.append(TextNode(alt, TextNode.IMAGE, src))
+            result.append(TextNode(substrings[0], TextType.TEXT.value))
+        result.append(TextNode(alt, TextType.IMAGE.value, src))
         if substrings[1]:
-            result.extend(split_nodes_image([TextNode(substrings[1], TextNode.TEXT)]))
+            result.extend(
+                split_nodes_image([TextNode(substrings[1], TextType.TEXT.value)])
+            )
 
     return result
 
@@ -121,7 +129,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     """
     result = []
     for node in old_nodes:
-        if node.text_type != TextNode.TEXT:
+        if node.text_type != TextType.TEXT.value:
             result.append(node)
             continue
 
@@ -134,10 +142,12 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
         text, href = link_data_list[0]
         substrings = node.text_content.split(f"[{text}]({href})", 1)
         if substrings[0]:
-            result.append(TextNode(substrings[0], TextNode.TEXT))
-        result.append(TextNode(text, TextNode.LINK, href))
+            result.append(TextNode(substrings[0], TextType.TEXT.value))
+        result.append(TextNode(text, TextType.LINK.value, href))
         if substrings[1]:
-            result.extend(split_nodes_link([TextNode(substrings[1], TextNode.TEXT)]))
+            result.extend(
+                split_nodes_link([TextNode(substrings[1], TextType.TEXT.value)])
+            )
 
     return result
 
@@ -151,11 +161,11 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     Returns:
         A list of TextNode instances.
     """
-    node_list = split_nodes_image([TextNode(text, TextNode.TEXT)])
+    node_list = split_nodes_image([TextNode(text, TextType.TEXT.value)])
     node_list = split_nodes_link(node_list)
-    node_list = split_nodes_delimiter(node_list, "**", TextNode.BOLD)
-    node_list = split_nodes_delimiter(node_list, "*", TextNode.ITALIC)
-    node_list = split_nodes_delimiter(node_list, "`", TextNode.CODE)
+    node_list = split_nodes_delimiter(node_list, "**", TextType.BOLD.value)
+    node_list = split_nodes_delimiter(node_list, "*", TextType.ITALIC.value)
+    node_list = split_nodes_delimiter(node_list, "`", TextType.CODE.value)
     return node_list
 
 

@@ -3,6 +3,7 @@
 import pytest
 
 from static_site_generator.business.textnode import TextNode
+from static_site_generator.constants import TextType
 from static_site_generator.utils import (
     extract_markdown_images,
     extract_markdown_links,
@@ -18,37 +19,39 @@ from static_site_generator.utils import (
     "data, expected",
     [
         (
-            [TextNode("Hello Tai, I'm here.", TextNode.TEXT)],
-            [TextNode("Hello Tai, I'm here.", TextNode.TEXT)],
+            [TextNode("Hello Tai, I'm here.", TextType.TEXT.value)],
+            [TextNode("Hello Tai, I'm here.", TextType.TEXT.value)],
         ),
         (
-            [TextNode("Hello **Tai**, I'm here.", TextNode.TEXT)],
+            [TextNode("Hello **Tai**, I'm here.", TextType.TEXT.value)],
             [
-                TextNode("Hello ", TextNode.TEXT),
-                TextNode("Tai", TextNode.BOLD),
-                TextNode(", I'm here.", TextNode.TEXT),
+                TextNode("Hello ", TextType.TEXT.value),
+                TextNode("Tai", TextType.BOLD.value),
+                TextNode(", I'm here.", TextType.TEXT.value),
             ],
         ),
         (
-            [TextNode("Hello Tai, I'm **here.**", TextNode.TEXT)],
+            [TextNode("Hello Tai, I'm **here.**", TextType.TEXT.value)],
             [
-                TextNode("Hello Tai, I'm ", TextNode.TEXT),
-                TextNode("here.", TextNode.BOLD),
+                TextNode("Hello Tai, I'm ", TextType.TEXT.value),
+                TextNode("here.", TextType.BOLD.value),
             ],
         ),
     ],
 )
 def test_split_nodes_delimiter(data, expected):
     """Test that `split_nodes_delimiter` method works correctly."""
-    assert split_nodes_delimiter(data, "**", TextNode.BOLD) == expected
+    assert split_nodes_delimiter(data, "**", TextType.BOLD.value) == expected
 
     with pytest.raises(TypeError) as excinfo:
-        split_nodes_delimiter(data, "**", TextNode.IMAGE)
+        split_nodes_delimiter(data, "**", TextType.IMAGE.value)
     assert "Invalid text type." in str(excinfo)
 
     with pytest.raises(ValueError) as excinfo:
         split_nodes_delimiter(
-            [TextNode("Hello Tai, **I'm here.", TextNode.TEXT)], "**", TextNode.BOLD
+            [TextNode("Hello Tai, **I'm here.", TextType.TEXT.value)],
+            "**",
+            TextType.BOLD.value,
         )
     assert "Invalid markdown syntax." in str(excinfo)
 
@@ -84,14 +87,14 @@ def test_split_nodes_image():
             "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) "
             "and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)."
         ),
-        TextNode.TEXT,
+        TextType.TEXT.value,
     )
     assert split_nodes_image([node]) == [
-        TextNode("This is text with a ", TextNode.TEXT),
-        TextNode("rick roll", TextNode.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
-        TextNode(" and ", TextNode.TEXT),
-        TextNode("obi wan", TextNode.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
-        TextNode(".", TextNode.TEXT),
+        TextNode("This is text with a ", TextType.TEXT.value),
+        TextNode("rick roll", TextType.IMAGE.value, "https://i.imgur.com/aKaOqIh.gif"),
+        TextNode(" and ", TextType.TEXT.value),
+        TextNode("obi wan", TextType.IMAGE.value, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        TextNode(".", TextType.TEXT.value),
     ]
 
 
@@ -102,14 +105,16 @@ def test_split_nodes_link():
             "This is text with a link [to boot dev](https://www.boot.dev) "
             "and [to youtube](https://www.youtube.com/@bootdotdev)."
         ),
-        TextNode.TEXT,
+        TextType.TEXT.value,
     )
     assert split_nodes_link([node]) == [
-        TextNode("This is text with a link ", TextNode.TEXT),
-        TextNode("to boot dev", TextNode.LINK, "https://www.boot.dev"),
-        TextNode(" and ", TextNode.TEXT),
-        TextNode("to youtube", TextNode.LINK, "https://www.youtube.com/@bootdotdev"),
-        TextNode(".", TextNode.TEXT),
+        TextNode("This is text with a link ", TextType.TEXT.value),
+        TextNode("to boot dev", TextType.LINK.value, "https://www.boot.dev"),
+        TextNode(" and ", TextType.TEXT.value),
+        TextNode(
+            "to youtube", TextType.LINK.value, "https://www.youtube.com/@bootdotdev"
+        ),
+        TextNode(".", TextType.TEXT.value),
     ]
 
 
@@ -121,16 +126,18 @@ def test_text_to_textnodes():
         "and a [link](https://boot.dev)"
     )
     assert text_to_textnodes(text) == [
-        TextNode("This is ", TextNode.TEXT),
-        TextNode("text", TextNode.BOLD),
-        TextNode(" with an ", TextNode.TEXT),
-        TextNode("italic", TextNode.ITALIC),
-        TextNode(" word and a ", TextNode.TEXT),
-        TextNode("code block", TextNode.CODE),
-        TextNode(" and an ", TextNode.TEXT),
-        TextNode("obi wan image", TextNode.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
-        TextNode(" and a ", TextNode.TEXT),
-        TextNode("link", TextNode.LINK, "https://boot.dev"),
+        TextNode("This is ", TextType.TEXT.value),
+        TextNode("text", TextType.BOLD.value),
+        TextNode(" with an ", TextType.TEXT.value),
+        TextNode("italic", TextType.ITALIC.value),
+        TextNode(" word and a ", TextType.TEXT.value),
+        TextNode("code block", TextType.CODE.value),
+        TextNode(" and an ", TextType.TEXT.value),
+        TextNode(
+            "obi wan image", TextType.IMAGE.value, "https://i.imgur.com/fJRm4Vk.jpeg"
+        ),
+        TextNode(" and a ", TextType.TEXT.value),
+        TextNode("link", TextType.LINK.value, "https://boot.dev"),
     ]
 
 

@@ -3,17 +3,11 @@
 import typing as tp
 
 from static_site_generator.business.htmlnode import LeafNode
+from static_site_generator.constants import TextType
 
 
 class TextNode:
     """Text node."""
-
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
 
     def __init__(self, text: str, text_type: str, url: tp.Optional[str] = None) -> None:
         """Inits TextNode."""
@@ -48,15 +42,15 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     """
 
     match text_node.text_type:
-        case TextNode.TEXT:
+        case TextType.TEXT.value:
             return LeafNode(text_node.text_content)
-        case TextNode.BOLD:
+        case TextType.BOLD.value:
             return LeafNode(text_node.text_content, tag="b")
-        case TextNode.ITALIC:
+        case TextType.ITALIC.value:
             return LeafNode(text_node.text_content, tag="i")
-        case TextNode.CODE:
+        case TextType.CODE.value:
             return LeafNode(text_node.text_content, tag="code")
-        case TextNode.LINK:
+        case TextType.LINK.value:
             return LeafNode(
                 text_node.text_content,
                 tag="a",
@@ -64,7 +58,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
                     "href": text_node.url,
                 },
             )
-        case TextNode.IMAGE:
+        case TextType.IMAGE.value:
             return LeafNode(
                 "",
                 tag="img",
