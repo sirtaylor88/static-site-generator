@@ -1,0 +1,55 @@
+[project]
+name = "static_site_generator"
+description = ""
+authors = [{ name = "Nhat Tai NGUYEN", email = "nhattai.nguyen88@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dynamic = ["version"]
+dependencies = ["poetry-dynamic-versioning (>=1.8.2,<2.0.0)"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.poetry]
+version = "0.0.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.8.3"
+black = "^25.1.0"
+isort = "^6.0.1"
+mypy = "^1.15.0"
+pre-commit = "^4.2.0"
+pylint = "^3.3.6"
+pytest = "^8.3.5"
+ruff = "^0.11.7"
+
+# Ruff
+[tool.ruff]
+line-length = 88
+exclude = [".git", ".venv"]
+target-version = "py312"
+
+# Pylint
+[tool.pylint.MAIN]
+ignore = [".venv"]
+
+[tool.pylint."messages control"]
+disable = [
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-positional-arguments",
+    "useless-import-alias",
+]
+
+# isort
+[tool.isort]
+skip = ["__init__.py"]
+
+# mypy
+[tool.mypy]
+explicit_package_bases = true
+ignore_missing_imports = true
