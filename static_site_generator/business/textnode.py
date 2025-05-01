@@ -9,7 +9,9 @@ from static_site_generator.constants import TextType
 class TextNode:
     """Text node."""
 
-    def __init__(self, text: str, text_type: str, url: tp.Optional[str] = None) -> None:
+    def __init__(
+        self, text: str, text_type: TextType, url: tp.Optional[str] = None
+    ) -> None:
         """Inits TextNode."""
         self.text_content = text
         self.text_type = text_type
@@ -42,15 +44,15 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     """
 
     match text_node.text_type:
-        case TextType.TEXT.value:
+        case TextType.TEXT:
             return LeafNode(text_node.text_content)
-        case TextType.BOLD.value:
+        case TextType.BOLD:
             return LeafNode(text_node.text_content, tag="b")
-        case TextType.ITALIC.value:
+        case TextType.ITALIC:
             return LeafNode(text_node.text_content, tag="i")
-        case TextType.CODE.value:
+        case TextType.CODE:
             return LeafNode(text_node.text_content, tag="code")
-        case TextType.LINK.value:
+        case TextType.LINK:
             return LeafNode(
                 text_node.text_content,
                 tag="a",
@@ -58,7 +60,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
                     "href": text_node.url,
                 },
             )
-        case TextType.IMAGE.value:
+        case TextType.IMAGE:
             return LeafNode(
                 "",
                 tag="img",

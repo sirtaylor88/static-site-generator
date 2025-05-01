@@ -3,15 +3,19 @@
 import pytest
 
 from static_site_generator.business.textnode import TextNode, text_node_to_html_node
+from static_site_generator.constants import TextType
 
 
 @pytest.mark.parametrize(
     "n1, n2",
     [
-        (["This is a text node", "bold"], ["This is a text node", "bold"]),
         (
-            ["This is a text node", "bold", "https://google.com"],
-            ["This is a text node", "bold", "https://google.com"],
+            ["This is a text node", TextType.BOLD],
+            ["This is a text node", TextType.BOLD],
+        ),
+        (
+            ["This is a text node", TextType.BOLD, "https://google.com"],
+            ["This is a text node", TextType.BOLD, "https://google.com"],
         ),
     ],
 )
@@ -62,19 +66,19 @@ def test_repr(n, expected):
 @pytest.mark.parametrize(
     "text, node_type, url, expected",
     [
-        ("", "text", None, ""),
-        ("Renault", "bold", None, "<b>Renault</b>"),
-        ("Alain", "italic", None, "<i>Alain</i>"),
-        ("python3 -V", "code", None, "<code>python3 -V</code>"),
+        ("", TextType.TEXT, None, ""),
+        ("Renault", TextType.BOLD, None, "<b>Renault</b>"),
+        ("Alain", TextType.ITALIC, None, "<i>Alain</i>"),
+        ("python3 -V", TextType.CODE, None, "<code>python3 -V</code>"),
         (
             "Search",
-            "link",
+            TextType.LINK,
             "https://google.fr",
             '<a href="https://google.fr">Search</a>',
         ),
         (
             "Mona Lisa",
-            "image",
+            TextType.IMAGE,
             (
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/"
                 "Mona_Lisa.jpg/594px-Mona_Lisa.jpg"
