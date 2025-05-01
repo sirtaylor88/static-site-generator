@@ -3,8 +3,9 @@
 import pytest
 
 from static_site_generator.business.textnode import TextNode
-from static_site_generator.constants import TextType
+from static_site_generator.constants import BlockType, TextType
 from static_site_generator.utils import (
+    block_to_block_type,
     extract_markdown_images,
     extract_markdown_links,
     markdowns_to_blocks,
@@ -164,3 +165,32 @@ This is the same paragraph on a new line
         ),
         "- This is a list\n- with items",
     ]
+
+
+@pytest.mark.parametrize(
+    "markdown_text, expected",
+    [
+        ("# h1", BlockType.HEADING),
+        ("## h2", BlockType.HEADING),
+        ("### h3", BlockType.HEADING),
+        ("#### h4", BlockType.HEADING),
+        ("##### h5", BlockType.HEADING),
+        ("###### h6", BlockType.HEADING),
+        ("```pytest . ```", BlockType.CODE),
+        ("```\npytest .\n```", BlockType.CODE),
+        (">Hello", BlockType.QUOTE),
+        ("> Hello\n> World", BlockType.QUOTE),
+        ("- Hello", BlockType.UNORDERED_LIST),
+        ("- Hello\n- World", BlockType.UNORDERED_LIST),
+        ("1. Hello", BlockType.UNORDERED_LIST),
+        ("1. Hello\n2. World", BlockType.ORDERED_LIST),
+        ("``pytest . ``", BlockType.PARAGRAPH),
+        ("> Hello\n World", BlockType.PARAGRAPH),
+        ("- Hello\nWorld", BlockType.PARAGRAPH),
+        ("2. Hello\n1. World", BlockType.PARAGRAPH),
+    ],
+)
+def test_block_to_block_type(markdown_text, expected):
+    """Test that `block_to_block_type` works correctly."""
+
+    assert block_to_block_type(markdown_text) == expected

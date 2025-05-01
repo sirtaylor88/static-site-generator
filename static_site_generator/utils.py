@@ -3,7 +3,7 @@
 import re
 
 from static_site_generator.business.textnode import TextNode
-from static_site_generator.constants import TextType
+from static_site_generator.constants import BlockType, TextType
 
 
 def split_nodes_delimiter(
@@ -174,3 +174,20 @@ def markdowns_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
     blocks = [block.strip() for block in blocks]
     return list(filter(None, blocks))
+
+
+def block_to_block_type(markdown: str) -> BlockType:
+    """Get block type."""
+
+    if re.match(r"^(#){1,6}.*", markdown):
+        return BlockType.HEADING
+    if re.match(r"^(`){3}[\s\S]*((`){3})$", markdown):
+        return BlockType.CODE
+    lines = markdown.split("\n")
+    if all(line.startswith(">") for line in lines):
+        return BlockType.QUOTE
+    if all(line.startswith("- ") for line in lines):
+        return BlockType.UNORDERED_LIST
+    if all(line.startswith(f"{idx}. ") for idx, line in enumerate(lines, start=1)):
+        return BlockType.ORDERED_LIST
+    return BlockType.PARAGRAPH
