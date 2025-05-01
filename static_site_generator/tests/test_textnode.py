@@ -2,7 +2,7 @@
 
 import pytest
 
-from textnode import TextNode, text_node_to_html_node
+from static_site_generator.business.textnode import TextNode, text_node_to_html_node
 
 
 @pytest.mark.parametrize(

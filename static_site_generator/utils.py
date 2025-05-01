@@ -2,7 +2,7 @@
 
 import re
 
-from textnode import TextNode
+from static_site_generator.business.textnode import TextNode
 
 
 def split_nodes_delimiter(
@@ -30,10 +30,10 @@ def split_nodes_delimiter(
         if node.text_type != TextNode.TEXT:
             result.append(node)
             continue
-        if delimiter in node.text and node.text.count(delimiter) == 1:
+        if delimiter in node.text_content and node.text_content.count(delimiter) == 1:
             raise ValueError("Invalid markdown syntax.")
 
-        substrings = node.text.split(delimiter, 2)
+        substrings = node.text_content.split(delimiter, 2)
         if len(substrings) < 3:
             result.append(node)
             continue
@@ -93,14 +93,14 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
             result.append(node)
             continue
 
-        image_data_list = extract_markdown_images(node.text)
+        image_data_list = extract_markdown_images(node.text_content)
 
         if not image_data_list:
             result.append(node)
             continue
 
         alt, src = image_data_list[0]
-        substrings = node.text.split(f"![{alt}]({src})", 1)
+        substrings = node.text_content.split(f"![{alt}]({src})", 1)
         if substrings[0]:
             result.append(TextNode(substrings[0], TextNode.TEXT))
         result.append(TextNode(alt, TextNode.IMAGE, src))
@@ -125,14 +125,14 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             result.append(node)
             continue
 
-        link_data_list = extract_markdown_links(node.text)
+        link_data_list = extract_markdown_links(node.text_content)
 
         if not link_data_list:
             result.append(node)
             continue
 
         text, href = link_data_list[0]
-        substrings = node.text.split(f"[{text}]({href})", 1)
+        substrings = node.text_content.split(f"[{text}]({href})", 1)
         if substrings[0]:
             result.append(TextNode(substrings[0], TextNode.TEXT))
         result.append(TextNode(text, TextNode.LINK, href))

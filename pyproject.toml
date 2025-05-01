@@ -53,3 +53,7 @@ skip = ["__init__.py"]
 [tool.mypy]
 explicit_package_bases = true
 ignore_missing_imports = true
+
+# bandit
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]

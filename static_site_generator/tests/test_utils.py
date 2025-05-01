@@ -2,8 +2,8 @@
 
 import pytest
 
-from textnode import TextNode
-from utils import (
+from static_site_generator.business.textnode import TextNode
+from static_site_generator.utils import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
