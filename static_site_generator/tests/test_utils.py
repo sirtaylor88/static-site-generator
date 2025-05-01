@@ -6,6 +6,7 @@ from static_site_generator.business.textnode import TextNode
 from static_site_generator.utils import (
     extract_markdown_images,
     extract_markdown_links,
+    markdowns_to_blocks,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
@@ -130,4 +131,29 @@ def test_text_to_textnodes():
         TextNode("obi wan image", TextNode.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
         TextNode(" and a ", TextNode.TEXT),
         TextNode("link", TextNode.LINK, "https://boot.dev"),
+    ]
+
+
+def test_markdowns_to_blocks():
+    """Test that `markdowns_to_blocks` works correctly."""
+
+    markdown_text = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+
+    markdowns_to_blocks(markdown_text)
+
+    assert markdowns_to_blocks(markdown_text) == [
+        "This is **bolded** paragraph",
+        (
+            "This is another paragraph with _italic_ text and `code` here\n"
+            "This is the same paragraph on a new line"
+        ),
+        "- This is a list\n- with items",
     ]
