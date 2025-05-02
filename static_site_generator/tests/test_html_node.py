@@ -2,7 +2,7 @@
 
 import pytest
 
-from static_site_generator.business.htmlnode import HTMLNode, LeafNode, ParentNode
+from static_site_generator.business.html_node import HTMLNode, LeafNode, ParentNode
 
 
 @pytest.mark.parametrize(

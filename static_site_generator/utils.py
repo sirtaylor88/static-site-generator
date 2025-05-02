@@ -2,8 +2,9 @@
 
 import re
 
-from static_site_generator.business.textnode import TextNode
-from static_site_generator.constants import BlockType, TextType
+from static_site_generator.business.html_node import HTMLNode, LeafNode
+from static_site_generator.business.text_node import TextNode, text_node_to_html_node
+from static_site_generator.constants import PATTERN, BlockType, TextType
 
 
 def split_nodes_delimiter(
@@ -21,7 +22,6 @@ def split_nodes_delimiter(
 
     Raises:
         TypeError: if text type is not valid.
-        ValueError: if there is a missing closing delimiter.
     """
     result = []
     if text_type not in [
@@ -37,7 +37,8 @@ def split_nodes_delimiter(
             result.append(node)
             continue
         if delimiter in node.text_content and node.text_content.count(delimiter) == 1:
-            raise ValueError("Invalid markdown syntax.")
+            result.append(node)
+            continue
 
         substrings = node.text_content.split(delimiter, 2)
         if len(substrings) < 3:
@@ -160,6 +161,7 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     node_list = split_nodes_image([TextNode(text, TextType.TEXT)])
     node_list = split_nodes_link(node_list)
     node_list = split_nodes_delimiter(node_list, "**", TextType.BOLD)
+    node_list = split_nodes_delimiter(node_list, "_", TextType.ITALIC)
     node_list = split_nodes_delimiter(node_list, "*", TextType.ITALIC)
     node_list = split_nodes_delimiter(node_list, "`", TextType.CODE)
     return node_list
@@ -175,9 +177,9 @@ def markdowns_to_blocks(markdown: str) -> list[str]:
 def block_to_block_type(markdown: str) -> BlockType:
     """Get block type."""
 
-    if re.match(r"^(#){1,6}.*", markdown):
+    if PATTERN.HEADING.value.match(markdown):
         return BlockType.HEADING
-    if re.match(r"^(`){3}[\s\S]*((`){3})$", markdown):
+    if PATTERN.CODE.value.match(markdown):
         return BlockType.CODE
     lines = markdown.split("\n")
     if all(line.startswith(">") for line in lines):
@@ -187,3 +189,104 @@ def block_to_block_type(markdown: str) -> BlockType:
     if all(line.startswith(f"{idx}. ") for idx, line in enumerate(lines, start=1)):
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
+
+
+def parse_paragraph(markdown: str) -> tuple[str, str]:
+    """Get paragraph text and tag."""
+    html_nodes = text_to_children(markdown.replace("\n", " "))
+    text = "".join(node.to_html() for node in html_nodes)
+    return text, "p"
+
+
+def parse_heading(markdown: str) -> tuple[str, str]:
+    """Get heading text and tag.
+
+    Raises:
+        ValueError if getting error.
+    """
+    m = PATTERN.HEADING.value.match(markdown)
+    if not m:
+        raise ValueError("Error parsing heading.")
+    level = len(m.group(1))
+    return m.group(2), f"h{level}"
+
+
+def parse_quote(markdown) -> tuple[str, str]:
+    """Get quote text and tag."""
+    text = ""
+    for line in markdown.split("\n"):
+        line_text = line[1:].strip()
+        html_nodes = text_to_children(line_text)
+        line_text = "".join(node.to_html() for node in html_nodes)
+        if not line_text:
+            continue
+        text += f"<p>{line_text}</p>"
+    return text, "blockquote"
+
+
+def parse_list(markdown: str, ordered: bool = False) -> tuple[str, str]:
+    """Get list text and tag."""
+    text = ""
+    slice_index = 2
+    tag = "ul"
+    if ordered:
+        slice_index = 3
+        tag = "ol"
+
+    for line in markdown.split("\n"):
+        line_text = line[slice_index:].strip()
+        if not line_text:
+            continue
+        text += f"<li>{line_text}</li>"
+    return text, tag
+
+
+def parse_code_block(markdown: str) -> tuple[str, str]:
+    """Get code text and tag.
+
+    Raises:
+        ValueError if getting error.
+    """
+    m = PATTERN.CODE.value.match(markdown)
+    if not m:
+        raise ValueError("Error parsing code block.")
+    return f"<code>{m.group(1).lstrip()}</code>", "pre"
+
+
+def block_to_html_node(markdown: str, block_type: BlockType) -> HTMLNode:
+    """Convert a text block to HTML node."""
+    if block_type not in BlockType:
+        raise ValueError
+
+    match block_type:
+        case BlockType.HEADING:
+            text, tag = parse_heading(markdown)
+        case BlockType.QUOTE:
+            text, tag = parse_quote(markdown)
+        case BlockType.UNORDERED_LIST:
+            text, tag = parse_list(markdown)
+        case BlockType.ORDERED_LIST:
+            text, tag = parse_list(markdown, ordered=True)
+        case BlockType.CODE:
+            text, tag = parse_code_block(markdown)
+        case _:
+            text, tag = parse_paragraph(markdown)
+
+    return LeafNode(text, tag=tag)
+
+
+def text_to_children(text: str) -> list[HTMLNode]:
+    """Convert a text to a list of HTMLNode."""
+    return [text_node_to_html_node(node) for node in text_to_textnodes(text)]
+
+
+def markdown_to_html_node(markdown: str) -> HTMLNode:
+    """Convert markdown text to a HTML node."""
+    blocks = markdowns_to_blocks(markdown)
+    html_content = ""
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        html_node = block_to_html_node(block, block_type)
+        html_content += html_node.to_html()
+
+    return LeafNode(html_content, tag="div")
