@@ -1,10 +1,16 @@
 """Main program."""
 
-from static_site_generator.business.text_node import TextNode
-from static_site_generator.core.constants import TextType
+from pathlib import Path
+
+from static_site_generator.core.utils import copy_static
 
 
 def main():
     """Main app."""
-    text_node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(text_node)
+    copy_static(
+        Path(__file__).parent.parent / "static",
+        Path(__file__).parent.parent.parent / "public",
+    )
+
+
+main()
