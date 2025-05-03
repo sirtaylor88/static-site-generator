@@ -1,5 +1,7 @@
 """Useful methods."""
 
+import typing as tp
+
 from static_site_generator.business.html_node import HTMLNode, LeafNode
 from static_site_generator.business.text_node import (
     text_node_to_html_node,
@@ -57,7 +59,7 @@ def parse_heading(markdown: str) -> tuple[str, str]:
     return m.group(2), f"h{level}"
 
 
-def text_to_html_string(text: str, tag: str) -> str:
+def text_to_html_string(text: str, tag: tp.Optional[str] = None) -> str:
     """Convert text to HTML."""
     html_nodes = text_to_children(text)
     text = "".join(node.to_html() for node in html_nodes)
@@ -70,7 +72,7 @@ def parse_quote(markdown) -> tuple[str, str]:
     text = ""
     for line in markdown.split("\n"):
         line_text = line[1:].strip()
-        text += text_to_html_string(line_text, "p")
+        text += text_to_html_string(line_text)
     return text, "blockquote"
 
 

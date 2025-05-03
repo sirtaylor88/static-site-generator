@@ -121,8 +121,7 @@ def test_quotes():
 
     node = markdown_to_html_node(md)
     assert node.to_html() == (
-        "<div><blockquote><p>hello world <b>_4 > 3</b></p><p><i>6 > 5</i>_</p>"
-        "</blockquote></div>"
+        "<div><blockquote>hello world <b>_4 > 3</b><i>6 > 5</i>_</blockquote></div>"
     )
 
 
