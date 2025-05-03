@@ -5,7 +5,7 @@ from static_site_generator.business.text_node import (
     text_node_to_html_node,
     text_to_textnodes,
 )
-from static_site_generator.constants import PATTERN, BlockType
+from static_site_generator.core.constants import PATTERN, BlockType
 
 
 def markdowns_to_blocks(markdown: str) -> list[str]:

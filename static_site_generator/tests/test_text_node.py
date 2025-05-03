@@ -12,7 +12,7 @@ from static_site_generator.business.text_node import (
     text_node_to_html_node,
     text_to_textnodes,
 )
-from static_site_generator.constants import TextType
+from static_site_generator.core.constants import TextType
 
 
 @pytest.mark.parametrize(

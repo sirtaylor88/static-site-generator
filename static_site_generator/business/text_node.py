@@ -4,7 +4,7 @@ import re
 import typing as tp
 
 from static_site_generator.business.html_node import LeafNode
-from static_site_generator.constants import TextType
+from static_site_generator.core.constants import TextType
 
 
 class TextNode:

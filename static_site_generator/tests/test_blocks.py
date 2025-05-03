@@ -7,7 +7,7 @@ from static_site_generator.business.blocks import (
     markdown_to_html_node,
     markdowns_to_blocks,
 )
-from static_site_generator.constants import BlockType
+from static_site_generator.core.constants import BlockType
 
 
 def test_markdowns_to_blocks():

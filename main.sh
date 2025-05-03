@@ -1,1 +1,1 @@
-python3 static_site_generator/main.py
+python3 static_site_generator/core/main.py
