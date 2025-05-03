@@ -3,7 +3,6 @@
 import os
 from pathlib import Path
 
-
 from static_site_generator.business.blocks import markdown_to_html_node
 
 
@@ -18,7 +17,7 @@ def extract_title(markdown: str) -> str:
     raise ValueError("No title found.")
 
 
-def generate_page(from_path: Path, template_path: Path, dest_path: Path):
+def generate_page(from_path: Path, template_path: Path, dest_path: Path) -> None:
     """Generate page."""
 
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
@@ -40,3 +39,19 @@ def generate_page(from_path: Path, template_path: Path, dest_path: Path):
 
     with open(dest_path, "w", encoding="utf-8") as df:
         df.write(html_content)
+
+
+def generate_pages_recursive(
+    dir_path_content: Path,
+    template_path: Path,
+    dest_dir_path: Path,
+) -> None:
+    """Generate page recursively."""
+    for item in os.scandir(dir_path_content):
+        source_path = Path(item.path)
+        if os.path.isfile(item):
+            generate_page(source_path, template_path, dest_dir_path / "index.html")
+        else:
+            generate_pages_recursive(
+                source_path, template_path, dest_dir_path / item.name
+            )
