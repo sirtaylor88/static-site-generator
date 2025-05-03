@@ -7,8 +7,7 @@ from pathlib import Path
 
 def copy_static(source: Path, destination: Path) -> None:
     """Copy static files."""
-    print(source)
-    print(destination)
+
     if os.path.exists(destination):
         for item in os.scandir(destination):
             if os.path.isfile(item):

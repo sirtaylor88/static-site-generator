@@ -131,13 +131,13 @@ def test_unordered_list():
 
     md = """
 - bread
-- salad
+- **salad**
 - fruits
 """
 
     node = markdown_to_html_node(md)
     assert node.to_html() == (
-        "<div><ul><li>bread</li><li>salad</li><li>fruits</li></ul></div>"
+        "<div><ul><li>bread</li><li><b>salad</b></li><li>fruits</li></ul></div>"
     )
 
 
@@ -145,14 +145,14 @@ def test_ordered_list():
     """Test that `markdown_to_html_node` works correctly with ordered list."""
 
     md = """
-1. bread
+1. _bread_
 2. salad
 3. fruits
 """
 
     node = markdown_to_html_node(md)
     assert node.to_html() == (
-        "<div><ol><li>bread</li><li>salad</li><li>fruits</li></ol></div>"
+        "<div><ol><li><i>bread</i></li><li>salad</li><li>fruits</li></ol></div>"
     )
 
 

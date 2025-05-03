@@ -57,16 +57,20 @@ def parse_heading(markdown: str) -> tuple[str, str]:
     return m.group(2), f"h{level}"
 
 
+def text_to_html_string(text: str, tag: str) -> str:
+    """Convert text to HTML."""
+    html_nodes = text_to_children(text)
+    text = "".join(node.to_html() for node in html_nodes)
+
+    return LeafNode(text, tag).to_html() if text else ""
+
+
 def parse_quote(markdown) -> tuple[str, str]:
     """Get quote text and tag."""
     text = ""
     for line in markdown.split("\n"):
         line_text = line[1:].strip()
-        html_nodes = text_to_children(line_text)
-        line_text = "".join(node.to_html() for node in html_nodes)
-        if not line_text:
-            continue
-        text += f"<p>{line_text}</p>"
+        text += text_to_html_string(line_text, "p")
     return text, "blockquote"
 
 
@@ -81,9 +85,7 @@ def parse_list(markdown: str, ordered: bool = False) -> tuple[str, str]:
 
     for line in markdown.split("\n"):
         line_text = line[slice_index:].strip()
-        if not line_text:
-            continue
-        text += f"<li>{line_text}</li>"
+        text += text_to_html_string(line_text, "li")
     return text, tag
 
 

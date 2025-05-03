@@ -1,0 +1,42 @@
+"""Define views to serve."""
+
+import os
+from pathlib import Path
+
+
+from static_site_generator.business.blocks import markdown_to_html_node
+
+
+def extract_title(markdown: str) -> str:
+    """Extract the title."""
+
+    for line in markdown.split("\n\n"):
+        if line.startswith("# "):
+            return line.replace("# ", "", 1).strip()
+        if line.startswith("#\t"):
+            return line.replace("#\t", "", 1).strip()
+    raise ValueError("No title found.")
+
+
+def generate_page(from_path: Path, template_path: Path, dest_path: Path):
+    """Generate page."""
+
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    with open(from_path, encoding="utf-8") as sf:
+        markdown = sf.read()
+
+    with open(template_path, encoding="utf-8") as tf:
+        template = tf.read()
+
+    html_node = markdown_to_html_node(markdown)
+    content = html_node.to_html()
+
+    title = extract_title(markdown)
+    html_content = template.replace("{{ Content }}", content).replace(
+        "{{ Title }}", title
+    )
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+
+    with open(dest_path, "w", encoding="utf-8") as df:
+        df.write(html_content)
