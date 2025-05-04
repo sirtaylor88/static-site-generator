@@ -20,3 +20,11 @@ poetry install
 ```bash
 ./test.sh
 ```
+
+## Build pages
+
+```bash
+./build.sh
+```
+
+The generated page can be accessed at [Tolkien Fan Club](https://sirtaylor88.github.io/static-site-generator/)

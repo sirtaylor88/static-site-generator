@@ -19,8 +19,6 @@ version = "0.0.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.3"
-
-# Ruff
 beautifulsoup4 = "^4.13.4"
 black = "^25.1.0"
 isort = "^6.0.1"
@@ -30,6 +28,8 @@ pylint = "^3.3.6"
 pytest = "^8.3.5"
 pytest-cov = "^6.1.1"
 ruff = "^0.11.7"
+
+# Ruff
 [tool.ruff]
 line-length = 88
 exclude = [".git", ".venv"]
